@@ -38,3 +38,11 @@ html[data-theme="desert"] .theme-toggle .tt-to-desert { display: none; }
 html[data-theme="neon"] .brand-mark { filter: drop-shadow(0 0 8px #b6ff3b35); }
 html[data-theme="neon"] h1 .outlined { text-shadow: 0 0 24px #b6ff3b1a; }
 html[data-theme="neon"] .button-primary:hover { box-shadow: 0 0 24px #b6ff3b28; }
+
+/* ---- Brand banner slide (first hero slide) ----
+   The artwork already carries the AI STUDIO OWL title, so no text or shading is drawn over it and the whole
+   image is shown (never cropped). Other slides keep their overlay copy. Works in both themes. */
+.sp-slide.is-brand-banner .sp-shade,
+.sp-slide.is-brand-banner .sp-content { display: none; }
+.sp-slide.is-brand-banner .sp-bg { background: #090b10; }
+.sp-slide.is-brand-banner .sp-bg img { object-fit: contain; object-position: center; width: 100%; height: 100%; transform: none !important; animation: none !important; }

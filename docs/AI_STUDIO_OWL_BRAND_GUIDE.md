@@ -1,6 +1,6 @@
 # AI STUDIO OWL — Brand and Platform Notes
 
-- Official site: https://aistudiosowl.vercel.app/
+- Official site: https://aistudioowl.vercel.app/
 - Official email: aistudioowl@gmail.com
 - X: https://x.com/aistudioowl
 - YouTube: https://www.youtube.com/@aistudioowl

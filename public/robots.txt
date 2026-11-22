@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://aistudiosowl.vercel.app/sitemap.xml
+Sitemap: https://aistudioowl.vercel.app/sitemap.xml

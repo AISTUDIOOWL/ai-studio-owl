@@ -1,5 +1,5 @@
 /** Public configuration for the AI STUDIO OWL platform. */
-export const SITE_URL = "https://aistudiosowl.vercel.app";
+export const SITE_URL = "https://aistudioowl.vercel.app";
 export const CONTACT_EMAIL = "aistudioowl@gmail.com";
 
 /** Official channels supplied by the project owner. */

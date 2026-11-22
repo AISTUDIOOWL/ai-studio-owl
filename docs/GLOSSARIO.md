@@ -10,7 +10,7 @@
 | Torre | Alojamento avançado planejado para atualização futura; preço e forma de aquisição ainda não publicados. |
 
 ## Identidade e canais oficiais
-- Website: https://aistudiosowl.vercel.app/
+- Website: https://aistudioowl.vercel.app/
 - E-mail: aistudioowl@gmail.com
 - X: https://x.com/aistudioowl
 - YouTube: https://www.youtube.com/@aistudioowl

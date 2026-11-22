@@ -25,7 +25,7 @@ Este pacote reune o codigo atualizado, a identidade Desert Marble e os assets co
    .\DEPLOY-VERCEL.ps1 -Target Preview
    ```
 
-5. Na primeira execucao, o Vercel CLI vai pedir para vincular a pasta a um projeto. **Selecione o projeto Vercel existente que deve atender `aistudiosowl.vercel.app`**. Nao crie um projeto novo por engano.
+5. Na primeira execucao, o Vercel CLI vai pedir para vincular a pasta a um projeto. **Selecione o projeto Vercel existente que deve atender `aistudioowl.vercel.app`**. Nao crie um projeto novo por engano.
 6. Teste a URL de Preview em desktop e celular.
 7. Somente depois da aprovacao, publique em producao:
 
@@ -48,7 +48,7 @@ O `vercel.json` configura `npm ci`, `npm run build` e `dist` como diretorio de s
 
 ## Dominio
 
-Confirme no painel da Vercel que `aistudiosowl.vercel.app` esta associado ao projeto escolhido durante `vercel link`. O CLI publica no projeto vinculado; ele nao cria nem altera DNS de dominios automaticamente neste pacote.
+Confirme no painel da Vercel que `aistudioowl.vercel.app` esta associado ao projeto escolhido durante `vercel link`. O CLI publica no projeto vinculado; ele nao cria nem altera DNS de dominios automaticamente neste pacote.
 
 ## Limites importantes
 

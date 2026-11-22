@@ -2,7 +2,7 @@
 type Lang = "en" | "pt-BR" | "es";
 
 const ENDPOINT: string = import.meta.env?.VITE_OWL_AI_ENDPOINT ?? "/api/owl-ai";
-const MAX_INPUT = 400;
+const MAX_INPUT = 800;
 const MAX_HISTORY = 8;
 
 interface Strings {
@@ -16,7 +16,7 @@ const T: Record<Lang, Strings> = {
     hello: "Systems online. I'm OWL_AI, your guide to the AI STUDIO OWL universe. What are you curious about?",
     thinking: "Scanning the grid…", offline: "OWL_AI is offline right now. Please try again later.", busy: "I'm helping other explorers. Try again in a moment.",
     rate: "You're sending messages too fast. Please wait a minute.", error: "Signal lost. Please try again.",
-    note: "AI can be wrong. Not financial advice. Never share your seed phrase.",
+    note: "EXPERIMENTAL BUILD · AI can be wrong. Not financial advice. Never share your seed phrase.",
     chips: ["What is AI STUDIO OWL?", "Which games can I play?", "How do I stay safe with wallets?"],
   },
   "pt-BR": {
@@ -24,7 +24,7 @@ const T: Record<Lang, Strings> = {
     hello: "Sistemas online. Sou a OWL_AI, sua guia pelo universo do AI STUDIO OWL. O que você quer saber?",
     thinking: "Escaneando a grade…", offline: "A OWL_AI está offline agora. Tente novamente mais tarde.", busy: "Estou ajudando outros exploradores. Tente de novo em instantes.",
     rate: "Você está enviando mensagens rápido demais. Aguarde um minuto.", error: "Sinal perdido. Tente novamente.",
-    note: "A IA pode errar. Não é conselho financeiro. Nunca compartilhe sua frase-semente.",
+    note: "VERSÃO EXPERIMENTAL · A IA pode errar. Não é conselho financeiro. Nunca compartilhe sua frase-semente.",
     chips: ["O que é o AI STUDIO OWL?", "Quais jogos posso jogar?", "Como me proteger com carteiras?"],
   },
   es: {
@@ -32,7 +32,7 @@ const T: Record<Lang, Strings> = {
     hello: "Sistemas en línea. Soy OWL_AI, tu guía por el universo de AI STUDIO OWL. ¿Qué quieres saber?",
     thinking: "Escaneando la red…", offline: "OWL_AI está fuera de línea ahora. Inténtalo más tarde.", busy: "Estoy ayudando a otros exploradores. Inténtalo en un momento.",
     rate: "Estás enviando mensajes muy rápido. Espera un minuto.", error: "Señal perdida. Inténtalo de nuevo.",
-    note: "La IA puede equivocarse. No es consejo financiero. Nunca compartas tu frase semilla.",
+    note: "VERSIÓN EXPERIMENTAL · La IA puede equivocarse. No es consejo financiero. Nunca compartas tu frase semilla.",
     chips: ["¿Qué es AI STUDIO OWL?", "¿Qué juegos puedo jugar?", "¿Cómo me protejo con billeteras?"],
   },
 };
@@ -62,7 +62,18 @@ export function initOwlAi(): void {
   fab.type = "button";
   fab.setAttribute("aria-expanded", "false");
   fab.setAttribute("aria-controls", "owlAiPanel");
-  fab.append(el("span", "owl-ai-fab-icon", "🦉"), el("span", "owl-ai-fab-ring"));
+  const fabVisual = el("span", "owl-ai-fab-visual");
+  fabVisual.setAttribute("aria-hidden", "true");
+  const fabLogo = el("img", "owl-ai-fab-image");
+  fabLogo.src = `${import.meta.env.BASE_URL}images/owl-ai-hologram.webp`;
+  fabLogo.alt = "OWL_AI holographic owl emblem";
+  fabLogo.decoding = "async";
+  fabLogo.addEventListener("load", () => fabVisual.classList.add("is-ready"), { once: true });
+  fabLogo.addEventListener("error", () => fabVisual.classList.add("is-error"), { once: true });
+  const fabFallback = el("span", "owl-ai-fab-fallback", "🦉");
+  fabFallback.setAttribute("aria-hidden", "true");
+  fabVisual.append(fabLogo, fabFallback);
+  fab.append(fabVisual, el("span", "owl-ai-fab-ring"));
 
   const panel = el("section", "owl-ai-panel");
   panel.id = "owlAiPanel";
@@ -74,9 +85,21 @@ export function initOwlAi(): void {
   const title = el("strong", "owl-ai-title");
   const sub = el("small", "owl-ai-sub");
   heading.append(title, sub);
+  const experimentalBadge = el("span", "owl-ai-mode-badge", "EXPERIMENTAL");
+  experimentalBadge.setAttribute("role", "status");
+  experimentalBadge.setAttribute("aria-label", "OWL_AI experimental version");
   const closeBtn = el("button", "owl-ai-close", "✕");
   closeBtn.type = "button";
-  head.append(el("span", "owl-ai-avatar", "🦉"), heading, closeBtn);
+  const avatar = el("span", "owl-ai-avatar");
+  const avatarLogo = el("img", "owl-ai-avatar-image");
+  avatarLogo.src = `${import.meta.env.BASE_URL}images/owl-ai-hologram.webp`;
+  avatarLogo.alt = "OWL_AI";
+  avatarLogo.decoding = "async";
+  const avatarFallback = el("span", "owl-ai-avatar-fallback", "🦉");
+  avatar.append(avatarLogo, avatarFallback);
+  avatarLogo.addEventListener("load", () => avatar.classList.add("is-ready"), { once: true });
+  avatarLogo.addEventListener("error", () => avatar.classList.add("is-error"), { once: true });
+  head.append(avatar, heading, experimentalBadge, closeBtn);
 
   const log = el("div", "owl-ai-log");
   log.setAttribute("role", "log");
@@ -97,6 +120,9 @@ export function initOwlAi(): void {
   panel.append(head, log, chips, form, note);
   root.append(fab, panel);
   document.body.appendChild(root);
+
+  // The same lightweight holographic image is used in the launcher and chat header.
+  // No WebGL/model-viewer or GLB download is needed for the OWL_AI identity.
 
   const history: { role: "user" | "assistant"; content: string }[] = [];
   let busy = false;
@@ -157,7 +183,7 @@ export function initOwlAi(): void {
     setBusy(true);
     let answer = "";
     controller = new AbortController();
-    const timeout = window.setTimeout(() => controller?.abort(), 100000);
+    const timeout = window.setTimeout(() => controller?.abort(), 260000);
     try {
       const res = await fetch(ENDPOINT, {
         method: "POST",
@@ -183,14 +209,16 @@ export function initOwlAi(): void {
           const data = line.slice(5).trim();
           if (!data || data === "[DONE]") continue;
           try {
-            const delta = JSON.parse(data)?.choices?.[0]?.delta?.content;
+            const parsed = JSON.parse(data);
+            if (parsed?.error) throw new Error(parsed.error === "busy" ? "busy" : "offline");
+            const delta = parsed?.choices?.[0]?.delta?.content;
             if (typeof delta === "string" && delta) {
               answer += delta;
               bubble.classList.remove("thinking");
               bubble.textContent = answer;
               log.scrollTop = log.scrollHeight;
             }
-          } catch { /* ignore a partial or non-JSON line */ }
+          } catch (e) { if (e instanceof Error && (e.message === "busy" || e.message === "offline")) throw e; /* ignore a partial or non-JSON line */ }
         }
       }
       if (!answer.trim()) throw new Error("error");

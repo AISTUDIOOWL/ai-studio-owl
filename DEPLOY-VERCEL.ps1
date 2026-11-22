@@ -80,7 +80,7 @@ Write-Host '[3/4] Conferindo vinculacao do projeto Vercel...' -ForegroundColor C
 $vercelProjectFile = Join-Path $ProjectRoot '.vercel/project.json'
 if (-not (Test-Path $vercelProjectFile)) {
     Write-Host 'Este diretorio ainda nao esta vinculado a um projeto Vercel.' -ForegroundColor Yellow
-    Write-Host 'Na etapa interativa, selecione o projeto existente que deve servir a URL aistudiosowl.vercel.app.' -ForegroundColor Yellow
+    Write-Host 'Na etapa interativa, selecione o projeto existente que deve servir a URL aistudioowl.vercel.app.' -ForegroundColor Yellow
     & npx --yes vercel@latest link
     Stop-OnNativeError 'vercel link'
 }

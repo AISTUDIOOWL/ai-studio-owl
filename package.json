@@ -8,7 +8,8 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test:bomber": "npm --prefix client test",
-    "publish:bomber": "node scripts/publish-bomber.mjs"
+    "publish:bomber": "node scripts/publish-bomber.mjs",
+    "test:owl-ai": "node tests/owl-ai-regression.mjs"
   },
   "dependencies": {
     "@google/model-viewer": "^3.5.0",

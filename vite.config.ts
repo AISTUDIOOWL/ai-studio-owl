@@ -1,4 +1,4 @@
-import { defineConfig, type Plugin } from "vite";
+import { defineConfig, loadEnv, type Plugin } from "vite";
 
 /** Serves /api/owl-ai during `npm run dev` with the same handler Vercel uses in production. */
 function owlAiDev(): Plugin {
@@ -21,4 +21,12 @@ function owlAiDev(): Plugin {
   };
 }
 
-export default defineConfig({ plugins: [owlAiDev()] });
+/** Makes server-only settings from .env / .env.local (LLAMA_*, OWL_AI_*, CF_ACCESS_*) visible to /api/owl-ai in dev.
+ *  They are copied to process.env only; Vite never exposes them to the browser (only VITE_* is public). */
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), "");
+  for (const [key, value] of Object.entries(env)) {
+    if (/^(LLAMA_|OWL_AI_|CF_ACCESS_)/.test(key) && process.env[key] === undefined) process.env[key] = value;
+  }
+  return { plugins: [owlAiDev()] };
+});

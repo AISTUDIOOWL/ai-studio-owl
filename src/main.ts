@@ -15,6 +15,7 @@ import { COMIC_VOLUME, COMIC_STATUS_LABEL, NEXT_VOLUME, type ComicEpisode } from
 import { initLanguageSwitcher } from "./i18n";
 import { initThemeToggle } from "./theme";
 import { initOwlAi } from "./owl-ai";
+import { initOwlAiRoadmap } from "./owl-ai-roadmap";
 import "./owl-ai.css";
 import "./neon-theme.css";
 
@@ -264,7 +265,7 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
         <span class="brand-type">AI STUDIO <b>OWL</b><small>THE UNIVERSE OF AI</small></span>
       </a>
       <nav class="nav-links" aria-label="Main navigation">
-        <a href="#ai-universe">EXPLORE</a><a href="#games">GAMES</a><a href="#lore">AI WORLD</a><a href="#trailer">VIDEO</a><a href="#about">STUDIO</a><a href="#token">${TOKEN_SYMBOL}</a><a href="#join">JOIN</a>
+        <a href="#ai-universe">EXPLORE</a><a href="#games">GAMES</a><a href="#lore">AI WORLD</a><a href="#roadmap">OWL_AI</a><a href="#trailer">VIDEO</a><a href="#about">STUDIO</a><a href="#token">${TOKEN_SYMBOL}</a><a href="#join">JOIN</a>
       </nav>
       <div class="language-switch" role="group" aria-label="Select language">
         <button type="button" data-language="en" aria-label="English" title="English">EN</button>
@@ -331,11 +332,9 @@ ${tokenSection}
 
       <section class="manifesto" id="about"><div class="manifesto-mark">${logo}</div><div><div class="eyebrow"><span class="eyebrow-line"></span> OUR DIRECTIVE</div><h2>IDEAS FIRST.<br/><span>LIMITS LAST.</span></h2><p>AI STUDIO OWL is an independent platform exploring the universe of artificial intelligence — games, video, storytelling, virtual creators, internet culture, crypto and useful AI technology. One creative ecosystem, built to keep expanding.</p></div><figure class="manifesto-coin"><img src="${img("logo-badge.webp")}" alt="AI STUDIO OWL cyber owl emblem" loading="lazy" decoding="async" width="170" height="170" /><figcaption>THE UNIVERSE<br/><b>OF AI</b></figcaption></figure></section>
 
-      <section class="roadmap-section" id="roadmap"><div class="section-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span> THE MISSION LOG</div><h2>FROM PIXELS <span>TO PROTOCOL</span></h2></div><div class="section-note">A WORK IN PROGRESS.<br/>A WORLD IN MOTION.</div></div><div class="roadmap">
-        <div class="roadmap-item active"><span class="roadmap-num">01</span><div><span class="roadmap-state">IN PROGRESS</span><h3>THE ARCADE</h3><p>AI STUDIO OWL brand refresh, platform expansion and new AI-powered experiences across multiple niches.</p></div><span class="roadmap-icon">↗</span></div>
-        <div class="roadmap-item"><span class="roadmap-num">02</span><div><span class="roadmap-state">UP NEXT</span><h3>WALLET CONNECT</h3><p>Explore responsible integrations across AI, creative tools and emerging technologies.</p></div><span class="roadmap-icon">◎</span></div>
-        <div class="roadmap-item"><span class="roadmap-num">03</span><div><span class="roadmap-state">ON THE HORIZON</span><h3>ON-CHAIN WORLDS</h3><p>Expand the ecosystem with new categories, creator experiences and community projects.</p></div><span class="roadmap-icon">◇</span></div>
-      </div></section>
+      <section class="roadmap-section owl-ai-roadmap-section" id="roadmap" aria-label="OWL_AI evolution roadmap">
+        <div id="owl-ai-roadmap"></div>
+      </section>
 ${joinSection}
 ${faqSection}
     </main>
@@ -356,6 +355,7 @@ initGrowth();
 initLanguageSwitcher();
 initThemeToggle();
 initOwlAi();
+initOwlAiRoadmap("#owl-ai-roadmap", "/data/owl-ai-roadmap.json");
 
 function initGrowth(): void {
   document.addEventListener("click", (e) => {

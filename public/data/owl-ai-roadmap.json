@@ -1,0 +1,701 @@
+{
+  "schemaVersion": 1,
+  "roadmapVersion": "1.1.0",
+  "currentRelease": "EXPERIMENTAL · integração local",
+  "updatedAt": "2026-11-22",
+  "refreshIntervalSeconds": 60,
+  "currentModel": {
+    "name": "Qwen3 1.7B Instruct — GGUF Q4_K_M",
+    "runtime": "llama.cpp b12532 · CPU",
+    "endpoint": "Servidor local privado (127.0.0.1:8080 apenas em desenvolvimento)",
+    "status": "verified-local",
+    "note": "Qwen3 1.7B Instruct Q4_K_M via llama.cpp b12532. O acesso público ainda depende da infraestrutura protegida de produção."
+  },
+  "intro": "A OWL_AI está disponível em modo Experimental no pacote local do AI STUDIO OWL. Acompanhe o que já foi integrado, o que ainda está em validação e os próximos passos antes do lançamento público.",
+  "phases": [
+    {
+      "id": "foundation",
+      "title": "Fundação e ambiente local",
+      "subtitle": "Modelo, dependências e execução no computador de desenvolvimento.",
+      "status": "completed",
+      "items": [
+        {
+          "id": "qwen-model",
+          "title": "Modelo oficial definido: Qwen3 1.7B Instruct Q4_K_M",
+          "description": "Modelo confirmado como referência atual. BitNet foi descartado porque não carregou no llama.cpp b12532.",
+          "status": "completed",
+          "translations": {
+            "en": {
+              "title": "Official model selected: Qwen3 1.7B Instruct Q4_K_M",
+              "description": "The current reference model is confirmed. BitNet was dropped because it did not load in llama.cpp b12532."
+            },
+            "es": {
+              "title": "Modelo oficial seleccionado: Qwen3 1.7B Instruct Q4_K_M",
+              "description": "El modelo de referencia actual está confirmado. BitNet se descartó porque no cargó en llama.cpp b12532."
+            }
+          }
+        },
+        {
+          "id": "llama-local",
+          "title": "Servidor llama.cpp local operacional",
+          "description": "Execução em CPU, quatro threads, contexto de 4096 tokens e porta local 8080. Endpoint /health respondeu status ok nos testes realizados.",
+          "status": "completed",
+          "translations": {
+            "en": {
+              "title": "Local llama.cpp server operational",
+              "description": "CPU execution, four threads, 4096-token context and local port 8080. The /health endpoint returned status ok in the recorded tests."
+            },
+            "es": {
+              "title": "Servidor local llama.cpp operativo",
+              "description": "Ejecución en CPU, cuatro hilos, contexto de 4096 tokens y puerto local 8080. El endpoint /health devolvió status ok en las pruebas registradas."
+            }
+          }
+        },
+        {
+          "id": "dependencies",
+          "title": "Dependências do projeto reinstaladas",
+          "description": "npm ci concluiu com 30 pacotes adicionados e zero vulnerabilidades reportadas naquela execução.",
+          "status": "completed",
+          "translations": {
+            "en": {
+              "title": "Project dependencies reinstalled",
+              "description": "npm ci completed with 30 packages added and zero vulnerabilities reported in that run."
+            },
+            "es": {
+              "title": "Dependencias del proyecto reinstaladas",
+              "description": "npm ci terminó con 30 paquetes añadidos y cero vulnerabilidades reportadas en esa ejecución."
+            }
+          }
+        },
+        {
+          "id": "local-widget",
+          "title": "Widget carregado no site local",
+          "description": "Interface foi aberta no navegador em localhost:5173 e recebeu respostas da API local. A validação visual completa entre temas e tamanhos de tela continua pendente.",
+          "status": "completed",
+          "translations": {
+            "en": {
+              "title": "Widget loaded on the local site",
+              "description": "The interface opened at localhost:5173 and received responses from the local API. Full visual validation across themes and screen sizes remains pending."
+            },
+            "es": {
+              "title": "Widget cargado en el sitio local",
+              "description": "La interfaz se abrió en localhost:5173 y recibió respuestas de la API local. La validación visual completa entre temas y tamaños de pantalla sigue pendiente."
+            }
+          }
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Foundation and local environment",
+          "subtitle": "Model, dependencies and execution on the development computer."
+        },
+        "es": {
+          "title": "Fundamentos y entorno local",
+          "subtitle": "Modelo, dependencias y ejecución en el equipo de desarrollo."
+        }
+      }
+    },
+    {
+      "id": "server-architecture",
+      "title": "API, streaming e arquitetura única",
+      "subtitle": "Comunicação entre widget, API server-side e servidor Qwen3.",
+      "status": "in_progress",
+      "items": [
+        {
+          "id": "server-api",
+          "title": "API server-side /api/owl-ai",
+          "description": "API organiza as solicitações, chama o modelo e mantém conhecimento e validação no servidor.",
+          "status": "completed",
+          "translations": {
+            "en": {
+              "title": "Server-side API /api/owl-ai",
+              "description": "The API routes requests to the model and keeps knowledge and validation on the server."
+            },
+            "es": {
+              "title": "API del servidor /api/owl-ai",
+              "description": "La API gestiona las solicitudes al modelo y mantiene el conocimiento y la validación en el servidor."
+            }
+          }
+        },
+        {
+          "id": "timeout",
+          "title": "Timeout de geração configurado em 240 segundos",
+          "description": "Aplicado em api/owl-ai.js, com registro do motivo do cancelamento. O timeout do widget é 260 segundos.",
+          "status": "completed",
+          "translations": {
+            "en": {
+              "title": "Generation timeout set to 240 seconds",
+              "description": "Applied in api/owl-ai.js with cancellation-reason logging. The widget timeout is 260 seconds."
+            },
+            "es": {
+              "title": "Tiempo límite de generación configurado en 240 segundos",
+              "description": "Aplicado en api/owl-ai.js con registro del motivo de cancelación. El tiempo límite del widget es de 260 segundos."
+            }
+          }
+        },
+        {
+          "id": "sse-cap",
+          "title": "Limite de segurança do streaming ampliado",
+          "description": "O pacote owl-ai-fix-stream introduziu limite de segurança de 400 KB e max_tokens de até 480 em respostas com conhecimento. O teste simulado de 300 blocos passou; falta regressão completa com o Qwen3 real após a versão final do pacote.",
+          "status": "in_progress",
+          "translations": {
+            "en": {
+              "title": "Streaming safety limit expanded",
+              "description": "The owl-ai-fix-stream package introduced a 400 KB safety limit and up to 480 max_tokens for knowledge-grounded answers. The simulated 300-chunk test passed; full regression with real Qwen3 is still pending."
+            },
+            "es": {
+              "title": "Límite de seguridad del streaming ampliado",
+              "description": "El paquete owl-ai-fix-stream introdujo un límite de seguridad de 400 KB y hasta 480 max_tokens en respuestas basadas en conocimiento. La prueba simulada de 300 bloques pasó; la regresión completa con Qwen3 real sigue pendiente."
+            }
+          }
+        },
+        {
+          "id": "abort-diagnostics",
+          "title": "Diagnóstico de cancelamento e desconexão",
+          "description": "API registra causas como timeout, cliente desconectado e limite de segurança. Confirmar os logs em uma sessão prolongada com o modelo real.",
+          "status": "in_progress",
+          "translations": {
+            "en": {
+              "title": "Cancellation and disconnect diagnostics",
+              "description": "The API logs causes such as timeout, client disconnect and safety limit. Confirm the logs during a long session with the real model."
+            },
+            "es": {
+              "title": "Diagnóstico de cancelación y desconexión",
+              "description": "La API registra causas como tiempo límite, desconexión del cliente y límite de seguridad. Confirmar los registros durante una sesión prolongada con el modelo real."
+            }
+          }
+        },
+        {
+          "id": "single-widget",
+          "title": "Consolidar um único widget e remover implementações antigas com segurança",
+          "description": "O relatório de atualização descreve a arquitetura única. Confirmar no repositório que imports, CSS e endpoints antigos não estão duplicados antes do lançamento.",
+          "status": "in_progress",
+          "translations": {
+            "en": {
+              "title": "Consolidate one widget and safely remove legacy implementations",
+              "description": "The update report describes a single architecture. Confirm that imports, CSS and old endpoints are not duplicated before launch."
+            },
+            "es": {
+              "title": "Consolidar un solo widget y retirar implementaciones antiguas de forma segura",
+              "description": "El informe de actualización describe una arquitectura única. Confirmar que imports, CSS y endpoints antiguos no estén duplicados antes del lanzamiento."
+            }
+          }
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "API, streaming and single architecture",
+          "subtitle": "Communication between the widget, server-side API and Qwen3 server."
+        },
+        "es": {
+          "title": "API, streaming y arquitectura única",
+          "subtitle": "Comunicación entre el widget, la API del servidor y el servidor Qwen3."
+        }
+      }
+    },
+    {
+      "id": "game-knowledge",
+      "title": "Conhecimento oficial do GRIDBREAKERS",
+      "subtitle": "Informações factuais, habilidades e respostas rápidas com fonte controlada.",
+      "status": "in_progress",
+      "items": [
+        {
+          "id": "knowledge-server",
+          "title": "Base de conhecimento movida para o servidor",
+          "description": "api/_lib/knowledge.js organiza o conhecimento por seções e seleciona conteúdo relevante para cada solicitação.",
+          "status": "completed",
+          "translations": {
+            "en": {
+              "title": "Knowledge base moved to the server",
+              "description": "api/_lib/knowledge.js organizes knowledge by sections and selects relevant content for each request."
+            },
+            "es": {
+              "title": "Base de conocimiento trasladada al servidor",
+              "description": "api/_lib/knowledge.js organiza el conocimiento por secciones y selecciona contenido relevante para cada solicitud."
+            }
+          }
+        },
+        {
+          "id": "combat-module",
+          "title": "Respostas determinísticas das habilidades dos oito heróis",
+          "description": "api/_lib/combat-answers.js separa habilidades básicas e ultimates e responde em PT-BR, EN e ES. Testes em chat confirmaram Kira, Titan e Kai; o relatório do Claude registra conferência dos oito heróis contra os dados-fonte.",
+          "status": "completed",
+          "translations": {
+            "en": {
+              "title": "Deterministic ability answers for all eight heroes",
+              "description": "api/_lib/combat-answers.js separates basic skills and ultimates and answers in PT-BR, EN and ES. Chat tests confirmed Kira, Titan and Kai; the Claude report records a cross-check of all eight heroes against source data."
+            },
+            "es": {
+              "title": "Respuestas deterministas de habilidades para los ocho héroes",
+              "description": "api/_lib/combat-answers.js separa habilidades básicas y ultimates y responde en PT-BR, EN y ES. Las pruebas de chat confirmaron Kira, Titan y Kai; el informe de Claude registra la verificación de los ocho héroes con los datos fuente."
+            }
+          }
+        },
+        {
+          "id": "strategy-context",
+          "title": "Seleção de contexto para perguntas sobre equipes e vários heróis",
+          "description": "GAME_CONTEXT e o roteamento foram ampliados para reconhecer nomes de heróis e enviar COMBATE E HABILIDADES ao Qwen3 em perguntas estratégicas.",
+          "status": "completed",
+          "translations": {
+            "en": {
+              "title": "Context selection for team and multi-hero questions",
+              "description": "GAME_CONTEXT and routing were expanded to recognize hero names and send COMBATE E HABILIDADES to Qwen3 for strategic questions."
+            },
+            "es": {
+              "title": "Selección de contexto para preguntas de equipos y varios héroes",
+              "description": "GAME_CONTEXT y el enrutamiento se ampliaron para reconocer nombres de héroes y enviar COMBATE E HABILIDADES a Qwen3 en preguntas estratégicas."
+            }
+          }
+        },
+        {
+          "id": "knowledge-sync",
+          "title": "Sincronizar conhecimento com o código atualizado do jogo",
+          "description": "Auditar a pasta local do GRIDBREAKERS, confirmar habilidades e fórmulas diretamente no código e manter knowledge.js e combat-answers.js sincronizados.",
+          "status": "planned",
+          "translations": {
+            "en": {
+              "title": "Synchronize knowledge with the updated game code",
+              "description": "Audit the local GRIDBREAKERS folder, confirm abilities and formulas directly in code, and keep knowledge.js and combat-answers.js synchronized."
+            },
+            "es": {
+              "title": "Sincronizar el conocimiento con el código actualizado del juego",
+              "description": "Auditar la carpeta local de GRIDBREAKERS, confirmar habilidades y fórmulas directamente en el código y mantener sincronizados knowledge.js y combat-answers.js."
+            }
+          }
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Official GRIDBREAKERS knowledge",
+          "subtitle": "Verified facts, abilities and fast answers from a controlled source."
+        },
+        "es": {
+          "title": "Conocimiento oficial de GRIDBREAKERS",
+          "subtitle": "Datos verificados, habilidades y respuestas rápidas desde una fuente controlada."
+        }
+      }
+    },
+    {
+      "id": "reasoning-creative",
+      "title": "Raciocínio estratégico e criatividade",
+      "subtitle": "Respostas completas, táticas coerentes e propostas que respeitam as mecânicas existentes.",
+      "status": "in_progress",
+      "items": [
+        {
+          "id": "strategy-accuracy",
+          "title": "Melhorar precisão das recomendações estratégicas",
+          "description": "Ainda foram observadas recomendações com confusão entre cura básica e ultimate, ou efeitos de proteção não documentados. O Qwen3 deve distinguir fatos, inferências e hipóteses.",
+          "status": "in_progress",
+          "translations": {
+            "en": {
+              "title": "Improve strategic recommendation accuracy",
+              "description": "Some recommendations still confuse basic healing with ultimates or suggest undocumented protection effects. Qwen3 must distinguish facts, inferences and hypotheses."
+            },
+            "es": {
+              "title": "Mejorar la precisión de las recomendaciones estratégicas",
+              "description": "Algunas recomendaciones todavía confunden la curación básica con las ultimates o sugieren protecciones no documentadas. Qwen3 debe distinguir hechos, inferencias e hipótesis."
+            }
+          }
+        },
+        {
+          "id": "exact-quantity",
+          "title": "Respeitar exatamente a quantidade de recomendações solicitada",
+          "description": "Há regra de quantidade no prompt, mas validar em perguntas estratégicas e criativas longas com o modelo real.",
+          "status": "in_progress",
+          "translations": {
+            "en": {
+              "title": "Respect the exact number of requested recommendations",
+              "description": "The prompt includes a quantity rule, but long strategic and creative requests still need validation with the real model."
+            },
+            "es": {
+              "title": "Respetar exactamente la cantidad de recomendaciones solicitada",
+              "description": "El prompt incluye una regla de cantidad, pero las solicitudes estratégicas y creativas largas aún deben validarse con el modelo real."
+            }
+          }
+        },
+        {
+          "id": "creative-guard",
+          "title": "Creative Guard v2 e prevenção de mecânicas duplicadas",
+          "description": "Validador server-side integrado. O relatório anterior registrou 15 de 17 casos esperados; melhorar sinônimos e casos-limite sem bloquear propostas legítimas.",
+          "status": "in_progress",
+          "translations": {
+            "en": {
+              "title": "Creative Guard v2 and duplicate-mechanic prevention",
+              "description": "The server-side validator is integrated. The previous report recorded 15 of 17 expected cases; improve synonyms and edge cases without blocking valid ideas."
+            },
+            "es": {
+              "title": "Creative Guard v2 y prevención de mecánicas duplicadas",
+              "description": "El validador del servidor está integrado. El informe anterior registró 15 de 17 casos esperados; mejorar sinónimos y casos límite sin bloquear ideas válidas."
+            }
+          }
+        },
+        {
+          "id": "strategy-regression",
+          "title": "Bateria de testes estratégicos com o Qwen3 real",
+          "description": "Testar composições de 2–5 heróis, perguntas de sinergia, planos de batalha e pedidos com exatamente N recomendações. Não há aprovação final registrada ainda.",
+          "status": "planned",
+          "translations": {
+            "en": {
+              "title": "Strategic regression tests with real Qwen3",
+              "description": "Test teams of 2–5 heroes, synergy questions, battle plans and requests for exactly N recommendations. No final approval is recorded yet."
+            },
+            "es": {
+              "title": "Pruebas de regresión estratégica con Qwen3 real",
+              "description": "Probar equipos de 2–5 héroes, preguntas de sinergia, planes de batalla y solicitudes de exactamente N recomendaciones. Todavía no hay aprobación final registrada."
+            }
+          }
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Strategic reasoning and creativity",
+          "subtitle": "Complete answers, coherent tactics and proposals that respect existing mechanics."
+        },
+        "es": {
+          "title": "Razonamiento estratégico y creatividad",
+          "subtitle": "Respuestas completas, tácticas coherentes y propuestas que respetan las mecánicas existentes."
+        }
+      }
+    },
+    {
+      "id": "experience-quality",
+      "title": "Experiência, idiomas e qualidade",
+      "subtitle": "Interface consistente, acessível e estável em diferentes dispositivos.",
+      "status": "in_progress",
+      "items": [
+        {
+          "id": "experimental-widget",
+          "title": "Widget OWL_AI identificado como EXPERIMENTAL",
+          "description": "O widget existente foi preservado e recebeu um selo visual de versão Experimental. A publicação pública e o acesso externo ao modelo ainda não foram validados.",
+          "status": "completed",
+          "translations": {
+            "en": {
+              "title": "OWL_AI widget marked EXPERIMENTAL",
+              "description": "The existing widget was preserved and given an Experimental version badge. Public deployment and external model access have not been validated."
+            },
+            "es": {
+              "title": "Widget OWL_AI marcado como EXPERIMENTAL",
+              "description": "Se conservó el widget existente y se añadió una insignia de versión Experimental. El despliegue público y el acceso externo al modelo aún no están validados."
+            }
+          }
+        },
+        {
+          "id": "online-roadmap",
+          "title": "Roadmap dinâmico integrado à página principal",
+          "description": "O componente lê public/data/owl-ai-roadmap.json, atualiza automaticamente após o deploy e consulta a fonte novamente conforme o intervalo configurado.",
+          "status": "completed",
+          "translations": {
+            "en": {
+              "title": "Dynamic roadmap integrated into the main page",
+              "description": "The component reads public/data/owl-ai-roadmap.json and refreshes automatically after deployment at the configured interval."
+            },
+            "es": {
+              "title": "Hoja de ruta dinámica integrada en la página principal",
+              "description": "El componente lee public/data/owl-ai-roadmap.json y se actualiza automáticamente después del despliegue según el intervalo configurado."
+            }
+          }
+        },
+        {
+          "id": "theme-validation",
+          "title": "Validar tema Neon e Desert Marble em conjunto com o widget",
+          "description": "O tema Desert foi observado no navegador. Fazer validação final dos dois temas, contraste, estados do chat e responsividade.",
+          "status": "in_progress",
+          "translations": {
+            "en": {
+              "title": "Validate Neon and Desert Marble themes with the widget",
+              "description": "The Desert theme was observed in the browser. Complete validation of both themes, contrast, chat states and responsiveness."
+            },
+            "es": {
+              "title": "Validar los temas Neon y Desert Marble junto con el widget",
+              "description": "El tema Desert se observó en el navegador. Completar la validación de ambos temas, contraste, estados del chat y adaptación a pantallas."
+            }
+          }
+        },
+        {
+          "id": "language-ui",
+          "title": "Validar idioma do site e idioma das respostas",
+          "description": "O widget suporta EN, PT-BR e ES. Conferir textos da interface, mensagens de erro e respostas factuais/gerativas em cada idioma.",
+          "status": "in_progress",
+          "translations": {
+            "en": {
+              "title": "Validate site language and response language",
+              "description": "The widget supports EN, PT-BR and ES. Check UI text, error messages and factual/generative responses in each language."
+            },
+            "es": {
+              "title": "Validar el idioma del sitio y el idioma de las respuestas",
+              "description": "El widget admite EN, PT-BR y ES. Revisar textos de interfaz, mensajes de error y respuestas factuales/generativas en cada idioma."
+            }
+          }
+        },
+        {
+          "id": "accessibility",
+          "title": "Acessibilidade, teclado e mobile",
+          "description": "Verificar foco, leitor de tela, navegação por teclado, áreas de toque e layout em telas pequenas.",
+          "status": "planned",
+          "translations": {
+            "en": {
+              "title": "Accessibility, keyboard and mobile",
+              "description": "Check focus, screen readers, keyboard navigation, touch targets and small-screen layout."
+            },
+            "es": {
+              "title": "Accesibilidad, teclado y móvil",
+              "description": "Revisar el foco, lectores de pantalla, navegación por teclado, áreas táctiles y diseño en pantallas pequeñas."
+            }
+          }
+        },
+        {
+          "id": "final-build",
+          "title": "Build final após todas as alterações recentes",
+          "description": "Builds anteriores passaram. Repetir node --check e npm run build depois de integrar a última correção de streaming e contexto estratégico.",
+          "status": "in_progress",
+          "translations": {
+            "en": {
+              "title": "Final build after the latest changes",
+              "description": "Previous builds passed. Run node --check and npm run build again after integrating the latest streaming and strategic-context fixes."
+            },
+            "es": {
+              "title": "Build final después de los últimos cambios",
+              "description": "Las compilaciones anteriores pasaron. Ejecutar node --check y npm run build después de integrar las últimas correcciones de streaming y contexto estratégico."
+            }
+          }
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Experience and quality",
+          "subtitle": "A consistent, accessible and stable interface across devices."
+        },
+        "es": {
+          "title": "Experiencia y calidad",
+          "subtitle": "Una interfaz coherente, accesible y estable en distintos dispositivos."
+        }
+      }
+    },
+    {
+      "id": "production-security",
+      "title": "Infraestrutura pública e segurança",
+      "subtitle": "Preparar a comunicação externa com o Qwen3 sem expor o computador ou segredos.",
+      "status": "planned",
+      "items": [
+        {
+          "id": "security-audit",
+          "title": "Auditoria de API e credenciais",
+          "description": "Revisar autenticação, CORS, rate limit, concorrência, prompt injection, logs e armazenamento de chaves. Nunca colocar chaves no frontend.",
+          "status": "planned",
+          "translations": {
+            "en": {
+              "title": "API and credential security audit",
+              "description": "Review authentication, CORS, rate limits, concurrency, prompt injection, logs and key storage. Never put keys in the frontend."
+            },
+            "es": {
+              "title": "Auditoría de seguridad de API y credenciales",
+              "description": "Revisar autenticación, CORS, límites de solicitudes, concurrencia, prompt injection, registros y almacenamiento de claves. Nunca colocar claves en el frontend."
+            }
+          }
+        },
+        {
+          "id": "cloudflare",
+          "title": "Configurar Cloudflare Tunnel e Cloudflare Access",
+          "description": "Expor o endpoint do Qwen3 de forma autenticada e controlada. O servidor local precisa estar ligado para responder se continuar hospedado no computador.",
+          "status": "planned",
+          "translations": {
+            "en": {
+              "title": "Configure Cloudflare Tunnel and Cloudflare Access",
+              "description": "Expose the Qwen3 endpoint through authenticated and controlled access. The local server must remain on if it continues to host the model."
+            },
+            "es": {
+              "title": "Configurar Cloudflare Tunnel y Cloudflare Access",
+              "description": "Exponer el endpoint de Qwen3 mediante acceso autenticado y controlado. El servidor local debe permanecer encendido si sigue alojando el modelo."
+            }
+          }
+        },
+        {
+          "id": "vercel-env",
+          "title": "Configurar variáveis e limites da Vercel",
+          "description": "Configurar LLAMA_URL, chave da API e credenciais Cloudflare no ambiente de produção; verificar limites de duração das funções, especialmente no modo criativo.",
+          "status": "planned",
+          "translations": {
+            "en": {
+              "title": "Configure Vercel environment variables and limits",
+              "description": "Set LLAMA_URL, API key and Cloudflare credentials in production; verify function duration limits, especially for creative mode."
+            },
+            "es": {
+              "title": "Configurar variables de entorno y límites de Vercel",
+              "description": "Configurar LLAMA_URL, clave de API y credenciales de Cloudflare en producción; revisar los límites de duración de funciones, especialmente en modo creativo."
+            }
+          }
+        },
+        {
+          "id": "production-e2e",
+          "title": "Teste ponta a ponta na URL pública",
+          "description": "Validar health, autenticação, respostas factuais, streaming e modo criativo fora da rede local, com monitoramento de erros e timeouts.",
+          "status": "planned",
+          "translations": {
+            "en": {
+              "title": "End-to-end test on the public URL",
+              "description": "Validate health, authentication, factual answers, streaming and creative mode outside the local network, with error and timeout monitoring."
+            },
+            "es": {
+              "title": "Prueba integral en la URL pública",
+              "description": "Validar health, autenticación, respuestas factuales, streaming y modo creativo fuera de la red local, con seguimiento de errores y tiempos límite."
+            }
+          }
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Public infrastructure and security",
+          "subtitle": "Prepare protected external access to Qwen3 without exposing the development computer or secrets."
+        },
+        "es": {
+          "title": "Infraestructura pública y seguridad",
+          "subtitle": "Preparar el acceso externo protegido a Qwen3 sin exponer el equipo de desarrollo ni los secretos."
+        }
+      }
+    },
+    {
+      "id": "release-maintenance",
+      "title": "Auditoria, lançamento e evolução contínua",
+      "subtitle": "Conferência final do repositório e processo de atualização do roadmap.",
+      "status": "planned",
+      "items": [
+        {
+          "id": "repo-audit",
+          "title": "Auditoria do repositório e do jogo",
+          "description": "Revisar alterações do GRIDBREAKERS, newsletter, usos de innerHTML, peso do repositório, arquivos duplicados e backups antes da publicação.",
+          "status": "planned",
+          "translations": {
+            "en": {
+              "title": "Repository and game audit",
+              "description": "Review GRIDBREAKERS changes, newsletter, innerHTML usage, repository size, duplicate files and backups before publication."
+            },
+            "es": {
+              "title": "Auditoría del repositorio y del juego",
+              "description": "Revisar cambios de GRIDBREAKERS, newsletter, usos de innerHTML, tamaño del repositorio, archivos duplicados y copias de seguridad antes de publicar."
+            }
+          }
+        },
+        {
+          "id": "git-release",
+          "title": "Revisão de branch, commit, push e deploy",
+          "description": "Conferir a branch real, git status e diff. Adicionar somente arquivos aprovados, sem .env.local, backups, node_modules ou patches temporários.",
+          "status": "planned",
+          "translations": {
+            "en": {
+              "title": "Review branch, commit, push and deployment",
+              "description": "Check the actual branch, git status and diff. Add only approved files; exclude .env.local, backups, node_modules and temporary patches."
+            },
+            "es": {
+              "title": "Revisar rama, commit, push y despliegue",
+              "description": "Comprobar la rama real, git status y diff. Añadir solo archivos aprobados; excluir .env.local, copias de seguridad, node_modules y parches temporales."
+            }
+          }
+        },
+        {
+          "id": "release-notes",
+          "title": "Histórico de versões e notas de atualização",
+          "description": "Registrar cada versão da OWL_AI, data, mudanças, correções e estado de implantação no arquivo central do roadmap.",
+          "status": "planned",
+          "translations": {
+            "en": {
+              "title": "Version history and release notes",
+              "description": "Record each OWL_AI version, date, changes, fixes and deployment status in the central roadmap file."
+            },
+            "es": {
+              "title": "Historial de versiones y notas de lanzamiento",
+              "description": "Registrar cada versión de OWL_AI, fecha, cambios, correcciones y estado del despliegue en el archivo central de la hoja de ruta."
+            }
+          }
+        }
+      ],
+      "translations": {
+        "en": {
+          "title": "Audit, launch and continuous improvement",
+          "subtitle": "Final repository checks and a repeatable roadmap update process."
+        },
+        "es": {
+          "title": "Auditoría, lanzamiento y mejora continua",
+          "subtitle": "Revisión final del repositorio y un proceso repetible para actualizar la hoja de ruta."
+        }
+      }
+    }
+  ],
+  "changelog": [
+    {
+      "date": "2026-11-20",
+      "label": "Base local Qwen3",
+      "description": "Qwen3 1.7B Q4_K_M definido como modelo atual e executado com llama.cpp b12532 em CPU.",
+      "translations": {
+        "en": {
+          "label": "Local Qwen3 setup",
+          "description": "Qwen3 1.7B Q4_K_M was selected as the current model and run with llama.cpp b12532 on CPU."
+        },
+        "es": {
+          "label": "Configuración local de Qwen3",
+          "description": "Qwen3 1.7B Q4_K_M se definió como modelo actual y se ejecutó con llama.cpp b12532 en CPU."
+        }
+      }
+    },
+    {
+      "date": "2026-11-21",
+      "label": "Arquitetura server-side e conhecimento",
+      "description": "API Qwen3, base GRIDBREAKERS e Creative Guard organizados no servidor; domínio do site corrigido para aistudioowl.vercel.app.",
+      "translations": {
+        "en": {
+          "label": "Server-side architecture and knowledge",
+          "description": "The Qwen3 API, GRIDBREAKERS knowledge base and Creative Guard were organized on the server; the site domain was corrected to aistudioowl.vercel.app."
+        },
+        "es": {
+          "label": "Arquitectura y conocimiento en el servidor",
+          "description": "La API Qwen3, la base de conocimiento GRIDBREAKERS y Creative Guard se organizaron en el servidor; el dominio del sitio se corrigió a aistudioowl.vercel.app."
+        }
+      }
+    },
+    {
+      "date": "2026-11-22",
+      "label": "Respostas factuais e streaming",
+      "description": "Respostas determinísticas para habilidades dos heróis, roteamento estratégico, timeout de 240 s e correção do limite de segurança do stream. A validação final com o Qwen3 real permanece em andamento.",
+      "translations": {
+        "en": {
+          "label": "Factual answers and streaming",
+          "description": "Deterministic hero-skill answers, strategic routing, a 240-second timeout and the streaming safety-cap fix were added. Final validation with real Qwen3 remains in progress."
+        },
+        "es": {
+          "label": "Respuestas factuales y streaming",
+          "description": "Se añadieron respuestas deterministas de habilidades, enrutamiento estratégico, tiempo límite de 240 s y corrección del límite de seguridad del streaming. La validación final con Qwen3 real sigue en curso."
+        }
+      }
+    },
+    {
+      "date": "2026-11-22",
+      "label": "Integração Experimental e roadmap online",
+      "description": "O widget único foi identificado como Experimental e o roadmap dinâmico foi integrado à página principal. Esta é uma integração local; deploy e funcionamento público ainda pendentes.",
+      "translations": {
+        "en": {
+          "label": "Experimental integration and online roadmap",
+          "description": "The single widget was marked Experimental and the dynamic roadmap was integrated into the main page. This is a local package integration; deployment and public operation remain pending."
+        },
+        "es": {
+          "label": "Integración Experimental y hoja de ruta online",
+          "description": "El widget único se marcó como Experimental y la hoja de ruta dinámica se integró en la página principal. Esta integración es local; el despliegue y el funcionamiento público siguen pendientes."
+        }
+      }
+    }
+  ],
+  "maintenance": {
+    "sourceFile": "/data/owl-ai-roadmap.json",
+    "refreshNote": "Edite este JSON para registrar cada nova versão, atualize roadmapVersion e updatedAt e publique o deploy. O site consulta o JSON ao abrir, ao retornar à aba e no intervalo indicado em refreshIntervalSeconds (padrão 60 s). A atualização automática dos visitantes só ocorre depois que a nova versão do JSON é publicada."
+  },
+  "translations": {
+    "en": {
+      "intro": "OWL_AI is available in Experimental mode in the local AI STUDIO OWL package. Follow what has been integrated, what is still being validated and what remains before public launch."
+    },
+    "es": {
+      "intro": "OWL_AI está disponible en modo Experimental en el paquete local de AI STUDIO OWL. Sigue lo que ya se integró, lo que sigue en validación y los pasos pendientes antes del lanzamiento público."
+    }
+  },
+  "currentReleaseTranslations": {
+    "en": "EXPERIMENTAL · local integration",
+    "es": "EXPERIMENTAL · integración local"
+  }
+}

@@ -1,25 +1,35 @@
-# OWL_AI — local setup
+# OWL_AI — AI Studio OWL assistant
 
-OWL_AI is the site assistant. The browser talks to `/api/owl-ai`, which forwards a short, validated chat to a
-BitNet `llama-server` (llama.cpp compatible) and streams the answer back.
+**Official model:** Qwen3 1.7B Instruct, GGUF Q4_K_M (`Qwen3-1.7B-Q4_K_M.gguf`), app identifier `qwen3-1.7b`.
+Server: llama.cpp **b12532** (`llama-server`), CPU only, `127.0.0.1:8080`.
+SHA256: `D2387CA2DBFEE2FFABCE7120D3770DADCA0B293052BC2F0E138FDC940D9BC7B5`.
+BitNet b1.58 2B-4T is discarded (it does not load in b12532: removed type `IQ4_NL_4_4`). Do not replace Qwen3 with BitNet.
 
-## Run locally
-1. Start BitNet (in the `BitNet` folder, conda env `bitnet-cpp`, Developer PowerShell):
-   `python run_inference_server.py -m models/BitNet-b1.58-2B-4T/ggml-model-i2_s.gguf -t 4 -c 2048 --host 127.0.0.1 --port 8080`
-2. In this repo: `npm ci` then `npm run dev`, open the URL Vite prints.
-3. Click the owl button (bottom right). Switch EN / BR / ES: the answers follow the site language.
+## Architecture (one OWL_AI)
+```
+Browser widget (src/owl-ai.ts)  ->  /api/owl-ai (Vercel function / Vite dev middleware)  ->  llama-server
+```
+- Normal questions: streamed. Only the relevant GRIDBREAKERS sections (`api/_lib/knowledge.js`) are added to the prompt.
+- Creative requests (design ideas about GRIDBREAKERS): non-streamed -> Creative Guard v2 (`api/_lib/creative-guard.js`) -> one retry with the reason -> answer, or a polite failure message. The connection sends `: ping` keepalives meanwhile.
+- Single-hero skill questions (8 heroes, PT-BR/EN/ES) are answered deterministically by `api/_lib/combat-answers.js` without calling the model; team/strategy questions or several heroes go to Qwen3. Keep its data in sync with `knowledge.js`.
+- `GET /api/owl-ai` returns `{"status":"ok"|"offline"}`.
+- Hardening: Origin allow-list, per-IP rate limit (creative costs 3), max simultaneous generations, input sanitising, prompt-injection replies, no upstream URL/error leaks. The browser never sees the model server or its key.
 
-`vite.config.ts` serves `/api/owl-ai` in dev with the same handler (`api/owl-ai.js`) that Vercel runs in production.
+## Run locally (Windows, PowerShell)
+1. Start the model (adapt paths; keep the key out of chat/logs):
+   `.\llama-server.exe -m .\models\Qwen3-1.7B-Q4_K_M.gguf --host 127.0.0.1 --port 8080 --jinja -c 4096 -b 128 -ub 32 -t 4 --api-key <KEY> --alias qwen3-1.7b`
+2. In `.env.local` set `OWL_AI_API_KEY` to the same `<KEY>` (see `.env.example`).
+3. `npm run dev` and open the site on localhost; click the owl button.
 
-## What the API enforces
-- POST only; Origin must be the site, `localhost`/`127.0.0.1`, or listed in `OWL_AI_ALLOWED_ORIGINS` (required in Vercel production).
-- Max 8 messages, 500 chars each, only `user`/`assistant` roles; chat-template tokens (`<|...|>`) and control characters are stripped.
-- Per-IP rate limit (default 15 / 5 min) and max 2 simultaneous generations (CPU protection). The limit is best effort on
-  serverless: for the public site also add a Cloudflare rate-limiting rule in front of the tunnel.
-- Obvious prompt-injection attempts (EN / PT / ES) get a fixed reply without calling the model.
-- The model is told to use only the facts in `FACTS` (top of `api/owl-ai.js`) — edit that block to teach it new, true information.
+## Known limits
+- Creative Guard is a regex heuristic tuned for Portuguese requests. It does not catch synonyms (e.g. "sortear herois" for gacha) and does little in EN/ES.
+- Rate limiting is in-memory (best effort on serverless).
+- Production needs the model reachable from Vercel (Cloudflare Tunnel + Access service token, `CF_ACCESS_*`); `127.0.0.1` is not reachable by visitors. Vercel function duration limits apply to creative mode.
+- Knowledge is verified against `public/gridbreakers/js/01-core-v146.js` (v3.7.x); several version identifiers exist in the docs, so never state one global "current" version.
 
-## Phase 2 (public, via Cloudflare Tunnel)
-Set `LLAMA_URL` to the tunnel hostname in Vercel, protect it with a Cloudflare Access service token
-(`CF_ACCESS_CLIENT_ID` / `CF_ACCESS_CLIENT_SECRET`) and/or `llama-server --api-key` + `LLAMA_API_KEY`.
-If the PC is off the widget shows a friendly "offline" message.
+
+## Experimental mode and online roadmap
+
+The site widget displays an **EXPERIMENTAL** badge while the model/API integration is being validated. The public release is not approved yet. The live development status is shown in `public/data/owl-ai-roadmap.json`; see `docs/OWL_AI_ROADMAP.md` for the update process.
+
+The strategy prompt includes extra constraints to keep basic abilities separate from ultimates and to avoid unsupported team effects. This remains experimental and must be regression-tested with the real Qwen3 model.

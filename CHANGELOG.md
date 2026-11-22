@@ -224,3 +224,10 @@ Primeira versao estavel do cliente e **base de todas as proximas versoes**.
 
 ## 0.3.5
 - TikTok adicionado aos links; bandeiras SVG (EUA=EN, Espanha=ES, Brasil=PT-BR).
+
+
+## OWL_AI holographic 3D logo (experimental)
+- Added the supplied owl face GLB as a lazy-loaded animated launcher logo.
+- Added subtle CSS hologram glow, scanlines, floating motion and slow model-viewer rotation.
+- Respects reduced-motion preferences and keeps the owl fallback icon if 3D loading fails.
+- Optimized the supplied model for web delivery; see `docs/OWL_AI_HOLOGRAM_LOGO.md`.

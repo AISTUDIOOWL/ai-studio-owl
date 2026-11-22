@@ -12,6 +12,7 @@ Browser widget (src/owl-ai.ts)  ->  /api/owl-ai (Vercel function / Vite dev midd
 - Normal questions: streamed. Only the relevant GRIDBREAKERS sections (`api/_lib/knowledge.js`) are added to the prompt.
 - Creative requests (design ideas about GRIDBREAKERS): non-streamed -> Creative Guard v2 (`api/_lib/creative-guard.js`) -> one retry with the reason -> answer, or a polite failure message. The connection sends `: ping` keepalives meanwhile.
 - Single-hero skill questions (8 heroes, PT-BR/EN/ES) are answered deterministically by `api/_lib/combat-answers.js` without calling the model; team/strategy questions or several heroes go to Qwen3. Keep its data in sync with `knowledge.js`.
+- Team/strategy questions are generated non-streamed and checked by `api/_lib/strategy-guard.js` (undocumented effects such as crit protection or damage reduction, Kai's 55% outside the ultimate, Titan shielding the team, wrong item count, truncated answers), with one retry; disable with `OWL_AI_STRATEGY_VALIDATE=0`.
 - `GET /api/owl-ai` returns `{"status":"ok"|"offline"}`.
 - Hardening: Origin allow-list, per-IP rate limit (creative costs 3), max simultaneous generations, input sanitising, prompt-injection replies, no upstream URL/error leaks. The browser never sees the model server or its key.
 
@@ -26,10 +27,3 @@ Browser widget (src/owl-ai.ts)  ->  /api/owl-ai (Vercel function / Vite dev midd
 - Rate limiting is in-memory (best effort on serverless).
 - Production needs the model reachable from Vercel (Cloudflare Tunnel + Access service token, `CF_ACCESS_*`); `127.0.0.1` is not reachable by visitors. Vercel function duration limits apply to creative mode.
 - Knowledge is verified against `public/gridbreakers/js/01-core-v146.js` (v3.7.x); several version identifiers exist in the docs, so never state one global "current" version.
-
-
-## Experimental mode and online roadmap
-
-The site widget displays an **EXPERIMENTAL** badge while the model/API integration is being validated. The public release is not approved yet. The live development status is shown in `public/data/owl-ai-roadmap.json`; see `docs/OWL_AI_ROADMAP.md` for the update process.
-
-The strategy prompt includes extra constraints to keep basic abilities separate from ultimates and to avoid unsupported team effects. This remains experimental and must be regression-tested with the real Qwen3 model.

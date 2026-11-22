@@ -62,17 +62,17 @@ export function initOwlAi(): void {
   fab.type = "button";
   fab.setAttribute("aria-expanded", "false");
   fab.setAttribute("aria-controls", "owlAiPanel");
+  const emblem = (cls: string): HTMLImageElement => {
+    const img = el("img", cls);
+    img.src = `${import.meta.env.BASE_URL}images/logo-badge.webp`; // official AI STUDIO OWL emblem (already used by the site brand)
+    img.alt = "";
+    img.decoding = "async";
+    img.width = 256; img.height = 256;
+    return img;
+  };
   const fabVisual = el("span", "owl-ai-fab-visual");
   fabVisual.setAttribute("aria-hidden", "true");
-  const fabLogo = el("img", "owl-ai-fab-image");
-  fabLogo.src = `${import.meta.env.BASE_URL}images/owl-ai-hologram.webp`;
-  fabLogo.alt = "OWL_AI holographic owl emblem";
-  fabLogo.decoding = "async";
-  fabLogo.addEventListener("load", () => fabVisual.classList.add("is-ready"), { once: true });
-  fabLogo.addEventListener("error", () => fabVisual.classList.add("is-error"), { once: true });
-  const fabFallback = el("span", "owl-ai-fab-fallback", "🦉");
-  fabFallback.setAttribute("aria-hidden", "true");
-  fabVisual.append(fabLogo, fabFallback);
+  fabVisual.append(emblem("owl-ai-fab-image"));
   fab.append(fabVisual, el("span", "owl-ai-fab-ring"));
 
   const panel = el("section", "owl-ai-panel");
@@ -85,20 +85,13 @@ export function initOwlAi(): void {
   const title = el("strong", "owl-ai-title");
   const sub = el("small", "owl-ai-sub");
   heading.append(title, sub);
-  const experimentalBadge = el("span", "owl-ai-mode-badge", "EXPERIMENTAL");
-  experimentalBadge.setAttribute("role", "status");
-  experimentalBadge.setAttribute("aria-label", "OWL_AI experimental version");
   const closeBtn = el("button", "owl-ai-close", "✕");
   closeBtn.type = "button";
   const avatar = el("span", "owl-ai-avatar");
-  const avatarLogo = el("img", "owl-ai-avatar-image");
-  avatarLogo.src = `${import.meta.env.BASE_URL}images/owl-ai-hologram.webp`;
-  avatarLogo.alt = "OWL_AI";
-  avatarLogo.decoding = "async";
-  const avatarFallback = el("span", "owl-ai-avatar-fallback", "🦉");
-  avatar.append(avatarLogo, avatarFallback);
-  avatarLogo.addEventListener("load", () => avatar.classList.add("is-ready"), { once: true });
-  avatarLogo.addEventListener("error", () => avatar.classList.add("is-error"), { once: true });
+  avatar.setAttribute("aria-hidden", "true");
+  avatar.append(emblem("owl-ai-avatar-image"));
+  const experimentalBadge = el("span", "owl-ai-mode-badge", "EXPERIMENTAL");
+  experimentalBadge.setAttribute("role", "status");
   head.append(avatar, heading, experimentalBadge, closeBtn);
 
   const log = el("div", "owl-ai-log");
@@ -120,9 +113,6 @@ export function initOwlAi(): void {
   panel.append(head, log, chips, form, note);
   root.append(fab, panel);
   document.body.appendChild(root);
-
-  // The same lightweight holographic image is used in the launcher and chat header.
-  // No WebGL/model-viewer or GLB download is needed for the OWL_AI identity.
 
   const history: { role: "user" | "assistant"; content: string }[] = [];
   let busy = false;

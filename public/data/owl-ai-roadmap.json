@@ -7,7 +7,7 @@
   "currentModel": {
     "name": "Qwen3 1.7B Instruct — GGUF Q4_K_M",
     "runtime": "llama.cpp b12532 · CPU",
-    "endpoint": "Servidor local privado (127.0.0.1:8080 apenas em desenvolvimento)",
+    "endpoint": "Servidor privado (não exposto publicamente)",
     "status": "verified-local",
     "note": "Qwen3 1.7B Instruct Q4_K_M via llama.cpp b12532. O acesso público ainda depende da infraestrutura protegida de produção."
   },
@@ -284,16 +284,16 @@
         {
           "id": "strategy-accuracy",
           "title": "Melhorar precisão das recomendações estratégicas",
-          "description": "Ainda foram observadas recomendações com confusão entre cura básica e ultimate, ou efeitos de proteção não documentados. O Qwen3 deve distinguir fatos, inferências e hipóteses.",
+          "description": "Foi adicionado um validador server-side (Strategy Guard) que rejeita efeitos não documentados, confusão entre cura básica e ultimate e contagem errada de itens, com uma nova tentativa automática. Falta validar com o Qwen3 real.",
           "status": "in_progress",
           "translations": {
             "en": {
               "title": "Improve strategic recommendation accuracy",
-              "description": "Some recommendations still confuse basic healing with ultimates or suggest undocumented protection effects. Qwen3 must distinguish facts, inferences and hypotheses."
+              "description": "A server-side validator (Strategy Guard) now rejects undocumented effects, basic-vs-ultimate healing mix-ups and wrong item counts, with one automatic retry. Validation with real Qwen3 is still pending."
             },
             "es": {
               "title": "Mejorar la precisión de las recomendaciones estratégicas",
-              "description": "Algunas recomendaciones todavía confunden la curación básica con las ultimates o sugieren protecciones no documentadas. Qwen3 debe distinguir hechos, inferencias e hipótesis."
+              "description": "Se añadió un validador del servidor (Strategy Guard) que rechaza efectos no documentados, confusión entre curación básica y ultimate y cantidades erróneas, con un reintento automático. Falta validarlo con Qwen3 real."
             }
           }
         },

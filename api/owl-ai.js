@@ -20,6 +20,7 @@
 import { selectKnowledge } from "./_lib/knowledge.js";
 import { validateCreativeAnswer } from "./_lib/creative-guard.js";
 import { answerCombatQuestion } from "./_lib/combat-answers.js";
+import { validateStrategyAnswer } from "./_lib/strategy-guard.js";
 
 const env = (name, fallback) => process.env[name] || fallback;
 
@@ -46,6 +47,12 @@ const FAIL = {
     "pt-BR": "Não consegui gerar uma proposta que passe na verificação de consistência com os sistemas documentados do GRIDBREAKERS. Tente reformular ou restringir o pedido.",
     es: "No pude generar una propuesta que pase mi verificación de coherencia con los sistemas documentados de GRIDBREAKERS. Prueba a reformular o acotar el pedido.",
   },
+};
+
+FAIL.strategy = {
+  en: "I couldn't produce a team recommendation that matches the documented abilities. Ask about one hero's skill at a time, or rephrase the question.",
+  "pt-BR": "Não consegui montar uma recomendação de equipe que bata com as habilidades documentadas. Pergunte sobre a habilidade de um herói por vez ou reformule a pergunta.",
+  es: "No pude armar una recomendación de equipo que coincida con las habilidades documentadas. Pregunta por la habilidad de un héroe a la vez o reformula la pregunta.",
 };
 
 const CREATIVE_RULES = `MODO CRIATIVO (Dev Owl). O usuario pede uma proposta de design para o GRIDBREAKERS.
@@ -256,7 +263,7 @@ export default async function handler(req, res) {
   const ac = new AbortController();
   const timeoutMs = 240000;
   const abort = (why) => { if (!ac.signal.aborted) { console.warn(`[OWL_AI] abort upstream: ${why}`); ac.abort(); } };
-  const timer = setTimeout(() => abort(`timeout ${timeoutMs}ms (${creative ? "creative" : "normal"})`), timeoutMs);
+  const timer = setTimeout(() => abort(`timeout ${timeoutMs}ms (${creative ? "creative" : strategic ? "strategic" : "normal"})`), timeoutMs);
   res.on("close", () => { if (!res.writableEnded) abort("client disconnected"); });
 
   const kb = GAME_CONTEXT.test(last) || /\b(slither|bomber)\b/i.test(last) ? selectKnowledge(last) : "";
@@ -267,21 +274,23 @@ export default async function handler(req, res) {
   while (history[0].role !== "user") history.shift();
 
   try {
-    if (creative) {
+    const validated = creative || (strategic && env("OWL_AI_STRATEGY_VALIDATE", "1") !== "0");
+    if (validated) {
       sseHead(res);
       res.write(": ping\n\n");
       const ping = setInterval(() => res.write(": ping\n\n"), 5000);
       try {
-        const extra = { max_tokens: MAX_TOKENS_CREATIVE, temperature: 0.65 };
+        const extra = creative ? { max_tokens: MAX_TOKENS_CREATIVE, temperature: 0.65 } : { max_tokens: MAX_TOKENS_KB, temperature: 0.25 };
+        const check = (a) => (creative ? validateCreativeAnswer(last, a) : validateStrategyAnswer(last, a));
         const msgs = [{ role: "system", content: system }, ...history];
         let answer = await generate(msgs, extra, ac.signal);
-        let reason = answer ? validateCreativeAnswer(last, answer) : "A resposta veio vazia.";
+        let reason = answer ? check(answer) : "A resposta veio vazia.";
         if (reason) {
           const retry = [...msgs, { role: "assistant", content: answer || "(vazio)" },
-            { role: "user", content: `Corrija: ${reason} Reescreva a resposta completa respeitando o pedido original e os sistemas ja documentados.` }];
-          answer = await generate(retry, { ...extra, temperature: 0.4 }, ac.signal);
-          reason = answer ? validateCreativeAnswer(last, answer) : "vazio";
-          if (reason) answer = FAIL.creative[lang];
+            { role: "user", content: `Corrija: ${reason} Reescreva a resposta completa, respeitando o pedido original e usando apenas efeitos documentados.` }];
+          answer = await generate(retry, { ...extra, temperature: creative ? 0.4 : 0.15 }, ac.signal);
+          reason = answer ? check(answer) : "vazio";
+          if (reason) answer = (creative ? FAIL.creative : FAIL.strategy)[lang];
         }
         sseText(res, answer.slice(0, MAX_OUTPUT_CHARS));
       } catch {

@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import { answerCombatQuestion } from "../api/_lib/combat-answers.js";
 import { selectKnowledge } from "../api/_lib/knowledge.js";
+import { validateStrategyAnswer } from "../api/_lib/strategy-guard.js";
 
 const heroes = [
   ["Lyra", "Moonwall", "Lunar Sanctuary"],
@@ -38,6 +39,12 @@ const teamKnowledge = selectKnowledge(strategicQuestions[0]);
 for (const term of ["COMBATE E HABILIDADES", "Kira", "Kai", "Titan"]) {
   assert.ok(teamKnowledge.includes(term), `Selected GRIDBREAKERS knowledge is missing ${term}`);
 }
+
+const okTeam = "1. Kira stuns the lowest-HP enemy with Neural Rupture.\n2. Titan's Bulwark Slam shields only Titan.\n3. Kai's ultimate Owl Protocol heals 55% of max HP.";
+assert.equal(validateStrategyAnswer(strategicQuestions[0], okTeam), null);
+assert.ok(validateStrategyAnswer(strategicQuestions[0], okTeam.replace("shields only Titan", "protects the team from critical hits")), "crit protection must be rejected");
+assert.ok(validateStrategyAnswer(strategicQuestions[0], okTeam.replace("Kai's ultimate Owl Protocol heals", "Kai heals")), "Kai 55% outside the ultimate must be rejected");
+assert.ok(validateStrategyAnswer(strategicQuestions[0], okTeam.split("\n").slice(0, 2).join("\n")), "wrong item count must be rejected");
 
 const api = fs.readFileSync(new URL("../api/owl-ai.js", import.meta.url), "utf8");
 assert.match(api, /STRATEGY_RULES/);
